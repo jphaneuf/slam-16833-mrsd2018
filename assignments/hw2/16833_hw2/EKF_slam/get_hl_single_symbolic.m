@@ -7,5 +7,5 @@ function [ zi ] = get_hl_single_symbolic (lx,ly)
   %Beta = wrapToPi ( atan2 ( ( ly - y ) , ( lx - x ) )  - theta )
   Beta = atan2 ( ( ly - y ) , ( lx - x ) )  - theta;
   r = sqrt ( ( ly - y )^2 + ( lx - x )^2 ) ;
-  zi = [ Beta r ];
+  zi = [ Beta ; r ];
 end
