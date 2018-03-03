@@ -2,10 +2,10 @@
 %Note: we're using a time step of 1 , so disregarding timestep. Note generalizable.
 
 function [ F ] = get_dfxu_dx_symbolic (  )
-  predicted_state = get_fxu_symbolic ( )
-  syms x y theta 
-  p = [ x y theta ]
-  F = jacobian ( predicted_state , p ) 
+  predicted_state = get_fxu_symbolic ( );
+  syms x y theta ;
+  p = [ x y theta ];
+  F = jacobian ( predicted_state , p ) ;
 end
 
 

@@ -83,7 +83,7 @@ while ischar(tline)
     %and add Fu measure_cov transpose (Fu) to our covariance prediction
     Fx = get_dfxu_dx ( x , [ d , alpha ] );
     Fu = get_dfxu_du ( x , [ d , alpha ] ); %lolz
-    Pr = P ( 1 : 3 , 1 : 3 ) % Extract robot pose covariance
+    Pr = P ( 1 : 3 , 1 : 3 ); % Extract robot pose covariance
     Pr = Fx * Pr * Fx' + Fu * control_cov * Fu';
     P_pre = P;
     P_pre ( 1 : 3 , 1 : 3 )  = Pr ;
@@ -115,8 +115,8 @@ while ischar(tline)
     
     % Write your code here...
     
-    x = x_pre
-    P = P_pre
+    x = x_pre;
+    P = P_pre;
     
     %==== Plot ====   
     drawTrajAndMap(x, last_x, P, t);

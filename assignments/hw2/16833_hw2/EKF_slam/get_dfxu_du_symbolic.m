@@ -2,10 +2,10 @@
 %Note: we're using a time step of 1 , so disregarding timestep. Note generalizable.
 
 function [ V ] = get_dfxu_du_symbolic (  )
-  predicted_state = get_fxu_symbolic ( )
-  syms drot vel 
-  u = [ vel drot ]
-  V = jacobian ( predicted_state , u ) 
+  predicted_state = get_fxu_symbolic ( );
+  syms drot vel ;
+  u = [ vel drot ];
+  V = jacobian ( predicted_state , u ) ;
 end
 
 
