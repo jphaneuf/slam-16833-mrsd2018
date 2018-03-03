@@ -27,12 +27,18 @@ tline = fgets(fid);
 arr = str2num(tline);
 measure = arr';
 t = 1;
- 
+k = length ( measure ) /2 ;% number of locations we are tracking
+
 %==== Setup control and measurement covariances ===
 %%This is wrong dudes:
 %control_cov = diag([sig_x2, sig_y2, sig_alpha2]);
 control_cov = diag([ sig_r2, sig_beta2 ]);
-measure_cov = diag([sig_beta2, sig_r2]);
+%%This is also wrong dudes:
+%measure_cov = diag([sig_beta2, sig_r2]);
+betacovs = ones ( 1 , k ) * sig_beta2;
+rcovs    = ones ( 1 , k ) * sig_r2;
+measure_cov = [ betacovs ; rcovs ];
+measure_cov = diag ( measure_cov ( : ) ) ;
 
 %==== Setup initial pose vector and pose uncertainty ====
 pose = [0 ; 0 ; 0];
@@ -41,7 +47,6 @@ pose_cov = diag([0.02^2, 0.02^2, 0.1^2]);
 %==== TODO: Setup initial landmark vector landmark[] and covariance matrix landmark_cov[] ====
 %==== (Hint: use initial pose with uncertainty and first measurement) ====
 % Write your code here...
-k = length ( measure ) /2 ;% number of locations we are tracking
 landmark = get_landmark_locations ( pose , measure );
 %==== Setup state vector x with pose and landmark vector ====
 x = [pose ; landmark];
@@ -80,7 +85,7 @@ while ischar(tline)
     % Then we can project our covariance P forwards in time P = Fx P transpose ( Fx)
     % We also also want to add uncertainty in state space based on our control noise
     % We can define Fu as the jacobian d f( x , u ) / d u  , 
-    %and add Fu measure_cov transpose (Fu) to our covariance prediction
+    %and add Fu control_cov transpose (Fu) to our covariance prediction
     Fx = get_dfxu_dx ( x , [ d , alpha ] );
     Fu = get_dfxu_du ( x , [ d , alpha ] ); %lolz
     Pr = P ( 1 : 3 , 1 : 3 ); % Extract robot pose covariance
@@ -113,10 +118,14 @@ while ischar(tline)
     %==== TODO: Update Step ====
     %==== (Notice: update state x[] and covariance P[] using input measurement data and measure_cov[]) ====
     
+    y = measure - get_hl ( x_pre );
+    H = get_H ( x_pre );
+    K = P_pre * H' * inv( H * P_pre * H' + measure_cov);
     % Write your code here...
     
-    x = x_pre;
-    P = P_pre;
+    x = x_pre + K * y;
+    I = eye ( size ( P_pre ) );
+    P = ( I - K * H ) * P_pre;
     
     %==== Plot ====   
     drawTrajAndMap(x, last_x, P, t);
