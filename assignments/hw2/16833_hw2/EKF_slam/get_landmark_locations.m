@@ -6,10 +6,10 @@ function [ landmarks ] = get_landmark_locations ( p , zs )
   nmt = 2; % n measurement types , beta and r
   nm  = length ( zs ) / nmt;
   zs = reshape ( zs , [ nmt , nm ] )';
-  landmarks = []
+  landmarks = [];
   for i = 1 : nm  
-    [ lx , ly ] = get_landmark_location ( p , zs ( i , :) )
-    landmarks = [ landmarks ; lx ; ly  ]
+    [ lx , ly ] = get_landmark_location ( p , zs ( i , :) );
+    landmarks = [ landmarks ; lx ; ly  ];
   end
 
 

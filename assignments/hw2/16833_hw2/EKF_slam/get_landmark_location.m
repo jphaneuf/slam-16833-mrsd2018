@@ -6,6 +6,6 @@ function [ lx ly ] = get_landmark_location  ( p , z )
   theta = p(3);
   Beta  = z(1);
   r     = z(2);
-  lx = x + r * cos ( theta + Beta )
-  ly = y + r * sin ( theta + Beta )
+  lx = x + r * cos ( theta + Beta );
+  ly = y + r * sin ( theta + Beta );
 end

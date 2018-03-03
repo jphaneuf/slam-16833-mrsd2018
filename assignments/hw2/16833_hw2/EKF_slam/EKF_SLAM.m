@@ -39,21 +39,11 @@ pose_cov = diag([0.02^2, 0.02^2, 0.1^2]);
 %==== TODO: Setup initial landmark vector landmark[] and covariance matrix landmark_cov[] ====
 %==== (Hint: use initial pose with uncertainty and first measurement) ====
 % Write your code here...
-%{
-we measure r beta
-want lx, ly
-want l ( p , z )
-landmark = measure
-landmark_cov = 
-k = length ( measure ) / 2
-landmark_measurements
-%}
-get_landmark_locations ( pose , measure )
-%[ lx , ly ] = get_landmark_location ( pose , measure ( 1 : 2 ) )
-return
+landmark = get_landmark_locations ( pose , measure );
 %==== Setup state vector x with pose and landmark vector ====
 x = [pose ; landmark];
 
+return
 %==== Setup covariance matrix P with pose and landmark covariances ====
 P = [pose_cov zeros(3, 2*k) ; zeros(2*k, 3) landmark_cov];
 
