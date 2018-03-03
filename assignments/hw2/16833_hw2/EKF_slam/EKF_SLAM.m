@@ -39,11 +39,15 @@ pose_cov = diag([0.02^2, 0.02^2, 0.1^2]);
 %==== TODO: Setup initial landmark vector landmark[] and covariance matrix landmark_cov[] ====
 %==== (Hint: use initial pose with uncertainty and first measurement) ====
 % Write your code here...
+k = length ( measure ) /2 ;% number of locations we are tracking
 landmark = get_landmark_locations ( pose , measure );
 %==== Setup state vector x with pose and landmark vector ====
 x = [pose ; landmark];
+xcovs = ones ( 1 , k ) * sig_x2;
+ycovs = ones ( 1 , k ) * sig_y2;
+landmark_cov = [ xcovs ; ycovs ];
+landmark_cov = diag ( landmark_cov ( : ) );
 
-return
 %==== Setup covariance matrix P with pose and landmark covariances ====
 P = [pose_cov zeros(3, 2*k) ; zeros(2*k, 3) landmark_cov];
 
@@ -60,8 +64,15 @@ while ischar(tline)
     
     %==== TODO: Predict Step ====
     %==== (Notice: predict state x_pre[] and covariance P_pre[] using input control data and control_cov[]) ====
+    x_pre = get_fxu ( last_x , [ d , alpha ] )
+    % our prediction is not linear. So we want to get a state transition matrix F
+    % We can get this by evaluating the jacobian d f (x , u ) / d x
+    % Then we can project our covariance P forwards in time P = F P transpose ( F)
+    % We also also want to add uncertainty in state space based on our control noise
+    % We can define V as the jacobian d f( x , u ) / d u  , and add V measure_cov transpose (V)
+    % to our covariance prediction
+    F = 
     
-    % Write your code here...
     
     
     %==== Draw predicted state x_pre[] and covariance P_pre[] ====

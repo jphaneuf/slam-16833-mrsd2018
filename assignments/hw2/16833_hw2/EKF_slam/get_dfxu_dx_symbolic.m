@@ -1,11 +1,11 @@
 % for some state p and control u at time t, predict state at next time step
 %Note: we're using a time step of 1 , so disregarding timestep. Note generalizable.
 
-function [ V ] = get_dfxu_du_symbolic (  )
+function [ F ] = get_dfxu_dx_symbolic (  )
   predicted_state = get_fxu_symbolic ( )
-  syms drot vel 
-  u = [ vel drot ]
-  V = jacobian ( predicted_state , u ) 
+  syms x y theta 
+  p = [ x y theta ]
+  F = jacobian ( predicted_state , p ) 
 end
 
 
