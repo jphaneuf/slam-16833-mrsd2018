@@ -29,7 +29,9 @@ measure = arr';
 t = 1;
  
 %==== Setup control and measurement covariances ===
-control_cov = diag([sig_x2, sig_y2, sig_alpha2]);
+%%This is wrong dudes:
+%control_cov = diag([sig_x2, sig_y2, sig_alpha2]);
+control_cov = diag([ sig_r2, sig_beta2 ]);
 measure_cov = diag([sig_beta2, sig_r2]);
 
 %==== Setup initial pose vector and pose uncertainty ====
@@ -64,16 +66,41 @@ while ischar(tline)
     
     %==== TODO: Predict Step ====
     %==== (Notice: predict state x_pre[] and covariance P_pre[] using input control data and control_cov[]) ====
-    x_pre = get_fxu ( last_x , [ d , alpha ] )
-    % our prediction is not linear. So we want to get a state transition matrix F
+    %Ok. We expect the robot's global position to change as a function of U
+    % We do not expect the landmarks' positions to change.  
+    % So we predict robot pose only at this stage
+    % Same goes for robot pose covariance
+    xr = x ( 1 : 3 );         % Extract robot pose estimate
+    x_pre_robot = get_fxu ( xr , [ d , alpha ] );
+    x_pre = x;
+    x_pre ( 1 : 3 ) = x_pre_robot;
+
+    % our prediction is not linear. So we want to get a state transition matrix Fx
     % We can get this by evaluating the jacobian d f (x , u ) / d x
-    % Then we can project our covariance P forwards in time P = F P transpose ( F)
+    % Then we can project our covariance P forwards in time P = Fx P transpose ( Fx)
     % We also also want to add uncertainty in state space based on our control noise
-    % We can define V as the jacobian d f( x , u ) / d u  , and add V measure_cov transpose (V)
-    % to our covariance prediction
-    F = 
-    
-    
+    % We can define Fu as the jacobian d f( x , u ) / d u  , 
+    %and add Fu measure_cov transpose (Fu) to our covariance prediction
+    Fx = get_dfxu_dx ( x , [ d , alpha ] );
+    Fu = get_dfxu_du ( x , [ d , alpha ] ); %lolz
+    Pr = P ( 1 : 3 , 1 : 3 ) % Extract robot pose covariance
+    Pr = Fx * Pr * Fx' + Fu * control_cov * Fu';
+    P_pre = P;
+    P_pre ( 1 : 3 , 1 : 3 )  = Pr ;
+    % We now want to update the covariance matrix robot pose vs landmark position
+    % Per SLAM EKF reference: http://ais.informatik.uni-freiburg.de/teaching/ss16/robotics/slides/13-slam.pdf slide 22
+    % We should take the robot/landmark covariance and project by Fx
+    for i = 0 : k -1
+      % x ,  y rows. x , y columns for landmark i
+      x_index = 4 + 2 * i;
+      y_index = x_index + 1;
+      sigLi = P_pre ( 1 : 3 , x_index : y_index );
+      sigLi ( 3 , 3 ) = 0; % fake theta so we can use Fx
+      sigLi = Fx * sigLi;
+      sigLi = sigLi ( 1 : 3 , 1 : 2 );
+      P_pre ( 1 : 3 , x_index : y_index ) = sigLi ;
+      P_pre ( x_index : y_index , 1 : 3 ) = sigLi';
+    end
     
     %==== Draw predicted state x_pre[] and covariance P_pre[] ====
     drawTrajPre(x_pre, P_pre);
@@ -88,6 +115,8 @@ while ischar(tline)
     
     % Write your code here...
     
+    x = x_pre
+    P = P_pre
     
     %==== Plot ====   
     drawTrajAndMap(x, last_x, P, t);
