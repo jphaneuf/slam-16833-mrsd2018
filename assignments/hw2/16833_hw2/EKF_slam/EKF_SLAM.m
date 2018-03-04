@@ -65,6 +65,7 @@ drawTrajAndMap(x, last_x, P, 0);
 %==== Read control data ====
 tline = fgets(fid);
 while ischar(tline)
+    fprintf ('running time step %d' , t )
     arr = str2num(tline);
     d = arr(1);
     alpha = arr(2);
