@@ -3,12 +3,11 @@
 
 function [ V ] = get_dfxu_du ( p , u  )
   syms x y theta vel drot;
-  px     = p(1);
-  py     = p(2);
-  ptheta = p(3);
-  uvel   = u(1);
-  udrot  = u(2);
   Vsym = get_dfxu_du_symbolic ( );
-  V = subs ( Vsym , {  x ,  y ,  theta ,  vel ,  drot } , ...
-                    { px , py , ptheta , uvel , udrot } );
+  x     = p ( 1 );
+  y     = p ( 2 );
+  theta = p ( 3 );
+  vel   = u ( 1 );
+  drot  = u ( 2 );
+  V = eval ( Vsym );
 end

@@ -9,13 +9,11 @@ function [ predicted_state ] = get_fxu ( p , u )
   syms x y theta vel drot;
   predicted_state_sym = get_fxu_symbolic();
 
-  px     = p(1);
-  py     = p(2);
-  ptheta = p(3);
-  uvel   = u(1);
-  udrot  = u(2);
+  x     = p ( 1 );
+  y     = p ( 2 );
+  theta = p ( 3 );
+  vel   = u ( 1 );
+  drot  = u ( 2 );
+  predicted_state = eval ( predicted_state_sym );
 
-  predicted_state = subs ( predicted_state_sym , ...
-                          {  x ,  y ,  theta ,  vel ,  drot } , ...
-                          { px , py , ptheta , uvel , udrot } );
 end
