@@ -11,6 +11,7 @@ sig_y = 0.1;
 sig_alpha = 0.1;
 sig_beta = 0.01;
 sig_r = 0.08;
+sig_dt = 0.1
 
 %==== Generate sigma^2 from sigma ===
 sig_x2 = sig_x^2;
@@ -18,6 +19,7 @@ sig_y2 = sig_y^2;
 sig_alpha2 = sig_alpha^2;
 sig_beta2 = sig_beta^2;
 sig_r2 = sig_r^2;
+sig_dt2 = sig_dt^2;
 
 %==== Open data file ====
 fid = fopen('../data/data.txt');
@@ -30,11 +32,13 @@ t = 1;
 k = length ( measure ) /2 ;% number of locations we are tracking
 
 %==== Setup control and measurement covariances ===
-%%This is wrong dudes:
+%%Wrong:
 %control_cov = diag([sig_x2, sig_y2, sig_alpha2]);
-control_cov = diag([ sig_r2, sig_beta2 ]);
-%%This is also wrong dudes:
+%%Right:
+control_cov = diag([ sig_dt2, sig_alpha2 ]);
+%%Also wrong:
 %measure_cov = diag([sig_beta2, sig_r2]);
+%%Right:
 betacovs = ones ( 1 , k ) * sig_beta2;
 rcovs    = ones ( 1 , k ) * sig_r2;
 measure_cov = [ betacovs ; rcovs ];
@@ -67,6 +71,7 @@ tline = fgets(fid);
 while ischar(tline)
     fprintf ('running time step %d' , t )
     arr = str2num(tline);
+    %arr = arr + (rand ( 1 , 2) -0.5 ) / 5 %Add noise to control for funsies
     d = arr(1);
     alpha = arr(2);
     
@@ -116,6 +121,7 @@ while ischar(tline)
     arr = str2num(tline);
     measure = arr';
     
+
     %==== TODO: Update Step ====
     %==== (Notice: update state x[] and covariance P[] using input measurement data and measure_cov[]) ====
     
