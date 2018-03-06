@@ -144,7 +144,15 @@ while ischar(tline)
 end
 
 %==== EVAL: Plot ground truth landmarks ====
-
 % Write your code here...
+landmark_estimates = x ( 4 : 15 );
+landmark_estimates = reshape ( landmark_estimates , [ 2 , 6 ] )';
+landmark_actual    = [ 3 6 ; 3 12 ; 7 8 ; 7 14 ; 11 6 ; 11 12 ];
+scatter ( landmark_actual ( : , 1 ) , landmark_actual ( : , 2 ) , 'black+')
+errors_euc = vecnorm ( landmark_estimates - landmark_actual , 2 , 2 ) % 2-norm , dimension 2 = each row
+errors_mah = mahal ( landmark_estimates , landmark_actual )
+
+
+
 %==== Close data file ====
 fclose(fid);
