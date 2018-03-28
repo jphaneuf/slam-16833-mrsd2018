@@ -1,0 +1,8 @@
+ORB-SLAM
+
+ORB-SLAM performs faster than PTAM. Splits Tracking , mapping , and loop closure to three threads. All processes make use of ORB features to reduce compute time. Graph is stored representing covisibility ( i.e. keyframes share observations of some point ( s ) ), used for multiple tasks in the algorithm. Uses bag-of-words for loop closure and to prune redundant keyframes. At time of writing, only monocular slam algorithm to process entire NewCollege data set correctly.
+
+
+LSD-SLAM
+
+LSD-SLAM is motivated by speed issues of direct monocular SLAM. It uses direct image alignment in addition to filter-based depth estimation. The key subsystems are tracking ( pose estimation ) , depth map estimation , map optimization. New depth maps are initialized from projections from the previous keyframe. The novel direct image alignnment method allows for measurement of scale drift.

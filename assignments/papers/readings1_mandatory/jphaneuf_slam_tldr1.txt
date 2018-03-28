@@ -1,0 +1,22 @@
+## TL;DR Parallel Tracking and Mapping for Small AR Workspaces
+This paper aims to track the pose of a hand held camera in real time without prior information about the setting. EKF-SLAM and FastSLAM were considered, but were not viable due to lack of odometry and lack motion control.
+
+A big part of maintaining tracking speed is functionally splitting tracking and mapping, allowing fast tracking on a frame-by-frame basis while separately doing batch optimzation on previous frames for mapping.
+
+To reduce the burden of mapping, only critcal 'key' frames are kept and used.
+
+Bundle adjustment for mapping is O(N3) for N keyframes, so eventually adding keyframes while exploring becomes too expensive to maintain real time operation.
+
+System (at time of paper) was real time at 6000 tracked map points, and 150 key frames.
+
+
+## TL;DR KinectFusion: Real-Time Dense Surface Mapping and Tracking 
+
+This paper aims to track the pose of a depth camera ( Kinect ) in real time without prior information about the setting. 
+
+This methodology creates dense surfaces by merging point clouds over multiple frames, contrasted to  PTAM (previously read) whic is useful for tracking but creates sparse maps.
+
+The process here is to  take a new measurement point cloud, estimate surfaces in that point cloud, estimate a camera pose by matching surface estimates the map, and use the pose estimate to add the new measurement to the map.
+
+
+
