@@ -1,6 +1,6 @@
 # 16-833 SLAM Homework 2
 # Joe Phaneuf ( andrew id: jphaneuf)
-# March 2 2018
+# March 6 2018
 
 # Introduction
 
@@ -240,8 +240,6 @@ Where the Euclidean distance is the physical distance of each landmark estimate 
 
 #3
 ## a.
-Additionally, when setting the initial value for the full covariance matrix P (line 49 in EKF_SLAM.m) an assumption is made regarding certain cross-covariances that is not necessarily correct. Can you point out what that is?
-
 The initial zero off-diagonal terms in the state covariance matrix become non-zero as we apply updates. Each prediction and update involves projecting control and measurement uncertainty into state space and incorporating those uncertainties into our state covariance estimate, with the effect of creating uncertainty of each state element relative to other state elements.
 
 To initialize the state covariance , we assume that each state element's variance is unrelated to all other state elements (diagonal covariance matrix). This is not actually true, as we form the intitial estimates based on measurements from the same position, but EKF adapts quickly enough to make this assumption not matter too much.
