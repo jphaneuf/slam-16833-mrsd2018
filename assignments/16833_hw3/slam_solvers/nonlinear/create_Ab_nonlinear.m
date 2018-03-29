@@ -91,21 +91,26 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
 
     obs_offset  = o_dim * ( n_odom + 1 ) + l_dim * o        ;
     lm_off      = o_dim * ( n_odom + 1 ) + l_dim * ( l - 1) ;
-    pose_offset = p_dim * ( i      - 1 )                    ;
+    pos_off = p_dim * ( i      - 1 )                    ;
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Compute jacobian subsection %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    rx = x ( pose_offset     + 1 );
-    ry = x ( pose_offset     + 2 );
+    rx = x ( pos_off     + 1 );
+    ry = x ( pos_off     + 2 );
     lx = x ( lm_off + 1 );
     ly = x ( lm_off + 2 );
     H_sub = meas_landmark_jacobian( rx , ry , lx , ly );
 
-    dtheta_dx =  H_sub ( 1 , 1 );
-    dtheta_dy =  H_sub ( 1 , 2 );
-    dd_dx     =  H_sub ( 2 , 1 );
-    dd_dy     =  H_sub ( 2 , 2 );
+
+    dtheta_drx  = H_sub ( 1 , 1 ); 
+    dtheta_dlx  = H_sub ( 1 , 2 ); 
+    dtheta_dry  = H_sub ( 1 , 3 ); 
+    dtheta_dly  = H_sub ( 1 , 4 ); 
+    dd_drx      = H_sub ( 2 , 1 ); 
+    dd_dlx      = H_sub ( 2 , 2 ); 
+    dd_dry      = H_sub ( 2 , 3 ); 
+    dd_dly      = H_sub ( 2 , 4 ); 
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Predict measurement based on x %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -118,10 +123,16 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%% Add landmark jacobian info to As %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    As = As + sparse (  obs_offset + 1 , lm_off + 1 , sigma_l * dtheta_dx , M,N );
-    As = As + sparse (  obs_offset + 1 , lm_off + 2 , sigma_l * dtheta_dy , M,N );
-    As = As + sparse (  obs_offset + 2 , lm_off + 1 , sigma_l * dd_dx     , M,N );
-    As = As + sparse (  obs_offset + 2 , lm_off + 2 , sigma_l * dd_dy     , M,N );
+    As = As + sparse (  obs_offset + 1 , pos_off + 1 , sigma_l * dtheta_drx, M,N );
+    As = As + sparse (  obs_offset + 1 , pos_off + 2 , sigma_l * dtheta_dry, M,N );
+    As = As + sparse (  obs_offset + 1 , lm_off  + 1 , sigma_l * dtheta_dlx, M,N );
+    As = As + sparse (  obs_offset + 1 , lm_off  + 2 , sigma_l * dtheta_dly, M,N );
+
+    As = As + sparse (  obs_offset + 2 , pos_off + 1 , sigma_l * dd_drx , M,N );
+    As = As + sparse (  obs_offset + 2 , pos_off + 2 , sigma_l * dd_dry , M,N );
+    As = As + sparse (  obs_offset + 2 , lm_off  + 1 , sigma_l * dd_dlx , M,N );
+    As = As + sparse (  obs_offset + 2 , lm_off  + 2 , sigma_l * dd_dly , M,N );
+
 
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     %% Formulate b ( error vector ) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -131,3 +142,4 @@ function [As, b] = create_Ab_nonlinear(x, odom, obs, sigma_o, sigma_l)
   end
 
 end
+
