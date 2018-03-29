@@ -17,4 +17,12 @@ function [x, R] = solve_chol2(A, b)
 %%%%%%%%%%%%%%%%%%%%% Your code goes here %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+  AtA = A' * A;  %one leg short of an at-at
+  %p = colamd ( AtA ); 
+  p = symrcm(AtA);
+  R = chol        ( AtA ( p , p ));
+  y = forward_sub ( R' , A ( : , p )'  * b )
+  x = back_sub    ( R  , y      )
+  x ( p ) = x
+
 end

@@ -15,7 +15,9 @@ function [x, R] = solve_qr1(A, b)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%% Your code goes here %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-  [C,R] = qr(A,b,0) % R is upper triangular a la cholsky
+  [C,R] = qr(A,b,0) % R is upper triangular
   %[C,R] = qr(A,b) 
+  %%Functions just fine with economy zero, presumably because
+  %% the system is very much overdetermined
   x = R \ C 
 end
