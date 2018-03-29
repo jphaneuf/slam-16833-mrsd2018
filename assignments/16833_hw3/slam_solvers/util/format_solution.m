@@ -21,5 +21,7 @@ function [traj, landmarks] = format_solution(x, n_poses, n_landmarks, p_dim, l_d
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%% Your code goes here %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  traj      = reshape ( x ( 1 : n_poses*p_dim ) , 2 , [] )'
+  landmarks = reshape ( x ( n_poses*p_dim + 1: end ) , 2 , [] )'
 
 end
