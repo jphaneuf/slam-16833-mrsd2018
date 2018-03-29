@@ -95,6 +95,6 @@ function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark)
     b ( obs_offset + 1 ) = sigma_l * ( wrapToPi ( lth - theta_p ) );
     b ( obs_offset + 2 ) = sigma_l * ( ld  - d_p     );
   end
-  err = sum ( b );
+  err = sum ( b.^2 );
 
 end
