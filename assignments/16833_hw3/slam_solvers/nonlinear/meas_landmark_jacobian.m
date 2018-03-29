@@ -18,12 +18,22 @@ function H = meas_landmark_jacobian(rx, ry, lx, ly)
   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
   x =  lx - rx;
   y =  ly - ry;
-  dtheta_dx = - ( y ) / ( x^2 + y^2 );
-  dtheta_dy =   ( x ) / ( x^2 + y^2 );
-  dd_dx     = x / sqrt  ( x^2 + y^2 );
-  dd_dy     = y / sqrt  ( x^2 + y^2 );
-  H ( 1 , 1 ) = dtheta_dx;
-  H ( 1 , 2 ) = dtheta_dy;
-  H ( 2 , 1 ) = dd_dx;
-  H ( 2 , 2 ) = dd_dy;
+  dtheta_drx =   ( y ) /       ( x^2 + y^2 );
+  dtheta_dlx = - ( y ) /       ( x^2 + y^2 );
+  dtheta_dry = - ( x ) /       ( x^2 + y^2 );
+  dtheta_dly =   ( x ) /       ( x^2 + y^2 );
+  dd_drx     = -   x   / sqrt  ( x^2 + y^2 );
+  dd_dlx     =     x   / sqrt  ( x^2 + y^2 );
+  dd_dry     = -   y   / sqrt  ( x^2 + y^2 );
+  dd_dly     =     y   / sqrt  ( x^2 + y^2 );
+
+  H ( 1 , 1 ) =  dtheta_drx;
+  H ( 1 , 2 ) =  dtheta_dlx;
+  H ( 1 , 3 ) =  dtheta_dry;
+  H ( 1 , 4 ) =  dtheta_dly;
+  H ( 2 , 1 ) =  dd_drx    ;
+  H ( 2 , 2 ) =  dd_dlx    ;
+  H ( 2 , 3 ) =  dd_dry    ;
+  H ( 2 , 4 ) =  dd_dly    ;
+
 end
