@@ -12,9 +12,10 @@
 %     R     - R factor from the QR decomposition
 %
 function [x, R] = solve_qr1(A, b)
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%% Your code goes here %%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+  [C,R] = qr(A,b,0) % R is upper triangular a la cholsky
+  %[C,R] = qr(A,b) 
+  x = R \ C 
 end
