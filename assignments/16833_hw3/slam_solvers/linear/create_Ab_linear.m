@@ -25,35 +25,111 @@
 %     b       - Mx1 vector
 %
 function [As, b] = create_Ab_linear(odom, obs, sigma_o, sigma_l)
+  % Useful Constants
+  n_poses = size(odom, 1) + 1; % +1 for prior on the first pose
+  n_landmarks = max(obs(:,2));
+
+  n_odom = size(odom, 1);
+  n_obs  = size(obs, 1);
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  n_poses     = 2;
+  n_landmarks = 3;
+
+  n_odom      = 1;
+  n_obs       = 2;
+
+  % Dimensions of state variables and measurements (all 2 in this case)
+  p_dim = 2;
+  l_dim = 2;
+  o_dim = size(odom, 2);
+  m_dim = size(obs(1, 3:end), 2);
+
+  % A matrix is MxN, b is Mx1
+  N = p_dim*n_poses    + l_dim*n_landmarks;
+  M = o_dim*(n_odom+1) + m_dim*n_obs;     % +1 for prior on the first pose
+
+  % Initialize matrices
+  A = zeros(M, N);
+  b = zeros(M, 1);
+
+  % Add odometry and landmark measurements to A, b - including prior on first
+  % pose
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%% Your code goes here %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %% Ai definition : rx1 ry1 rx2 ry2 ... rxN ryN ... %%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%  l1x1 l1y1 l2x1 l2y1 ... lkxN lkxM %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%% Where rxi is robot x position at time i %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%% ryi is robot y position at time i %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%lkxi is x position of landmark k at time i %%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%lkyi is y position of landmark k at time i %%%%%%%%%%%%%%%%%%%%%%%%
+  %% Thought: ui takes you from xi to xi+1 ( from xi-1 to xi )%%%%%%%%%%%%%%%%%%
+  %% Because there are 999 odoms and 1000 measurements %%%%%%%%%%%%%%%%%%%%%%%%%
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  xoff = 0;
+  yoff = 1 ;
+  A = [];
+
+%S = sparse(i,j,s,m,n)
+%i and j are vectors of row and column indices, respectively, for the nonzero elements of the matrix. s is a vector of nonzero values whose indices are specified by the corresponding (i,j) pairs. m is the row dimension of the resulting matrix, and n is the column dimension.
+
+  %for i = 0 : n_odom - 1
+  %  Ai = zeros ( 1 , N );
+  %  Ai (  ( o_dim * i ) + 1 )        = -1; % rxi
+  %  Ai (  ( o_dim * i ) + o_dim + 1) =  1; % ryi
+  %  A = [ A ; Ai ];
+  %  Ai = zeros ( 1 , N );
+  %  Ai (  ( o_dim * i ) +         yoff + 1  ) = -1; %rxi+1
+  %  Ai (  ( o_dim * i ) + o_dim + yoff + 1  ) =  1; %ryi+1
+  %  A = [ A ; Ai ];
+  %end
+
+  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  io  = 1: ( o_dim*n_odom         );
+  iox = 1: ( o_dim*n_odom + o_dim );
+
+  As = sparse (  io + o_dim , io  ,  -1 * ones ( 1 , length ( io  ) ) , M , N ) + ... %rx/ry at t = -1
+       sparse (  iox        , iox ,   1 * ones ( 1 , length ( iox ) ) , M , N ); %     
 
 
-% Useful Constants
-n_poses = size(odom, 1) + 1; % +1 for prior on the first pose
-n_landmarks = max(obs(:,2));
+  for o = 0 : n_obs -1
+    i = obs ( o + 1 , 1 ); % pose i at observation o
+    l = obs ( o + 1 , 2 ); % landmark at obseravation o
+    l = o
+    x = obs ( o + 1 , 3 ); 
+    y = obs ( o + 1 , 4 );
+    %%offset from odom and pose init. also offset for each observation
+    row_off = o_dim * ( n_odom + 1 ) + l_dim * o  ;
+    %%offset from odom and pose init. also offset for landmark id
+    col_off = o_dim * ( n_odom + 1 ) + l_dim * ( l - 1)
 
-n_odom = size(odom, 1);
-n_obs  = size(obs, 1);
+    %%% Add rxi and ryi %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    As = As + sparse (  (1:2) + row_off, (1:2)           , [ -1 -1 ] , M , N );
+    As = As + sparse (  (1:2) + row_off, (1:2) + col_off , [ -1 -1 ] , M , N );
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %As = As + sparse (  il , il ,  1 * ones ( 1 , length ( il ) ) , M , N )
+    %%% Add ryi %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %As = As + sparse (  il , il ,  1 * ones ( 1 , length ( il ) ) , M , N )
+    %%% Add l 1:mxi %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %As = As + sparse (  i_row    , i_col ,  il , M , N )
+    %%% Add l 1:myi %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %As = As + sparse (  i_row + 2, i_col ,  il , M , N )
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+  end
 
-% Dimensions of state variables and measurements (all 2 in this case)
-p_dim = 2;
-l_dim = 2;
-o_dim = size(odom, 2);
-m_dim = size(obs(1, 3:end), 2);
+  %landmark_a = sparse ( 0 ) % empty 
+  %for i = 1 : ( on_landmark
+  %  landmark_a = landmark_a + ...
+  %             sparse (  il    , il + i ,  1 * ones ( 1 , o_dim*n_odom ) , M , N )
+  %end
 
-% A matrix is MxN, b is Mx1
-N = p_dim*n_poses + l_dim*n_landmarks;
-M = o_dim*(n_odom+1) + m_dim*n_obs;     % +1 for prior on the first pose
-
-% Initialize matrices
-A = zeros(M, N);
-b = zeros(M, 1);
-
-% Add odometry and landmark measurements to A, b - including prior on first
-% pose
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%% Your code goes here %%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%% Make A a sparse matrix 
-As = sparse(A);
+  %% Make A a sparse matrix 
+  %full ( odom_a )
+  %As = sparse(A);
+  As = As;
+end
