@@ -32,8 +32,8 @@ function x = solve_linear_system(A, b)
   %p = colamd ( AtA ); 
   p = symrcm(AtA);
   R = chol        ( AtA ( p , p ));
-  y = forward_sub ( R' , A ( : , p )'  * b )
-  x = back_sub    ( R  , y      )
-  x ( p ) = x
+  y = forward_sub ( R' , A ( : , p )'  * b );
+  x = back_sub    ( R  , y      );
+  x ( p ) = x;
 
 end
