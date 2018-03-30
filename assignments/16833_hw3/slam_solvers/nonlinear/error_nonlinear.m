@@ -42,6 +42,7 @@ function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark)
   % A matrix is MxN, b is Nx1
   N = p_dim*n_poses + l_dim*n_landmarks;
   M = o_dim*(n_odom+1) + m_dim*n_obs;         % +1 for prior on the first pose
+  b = zeros ( N , 1);
 
   %% Initialize error
   err = 0;
@@ -54,7 +55,33 @@ function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark)
   sigma_o =  1 / sqrt ( sigma_odom ( 1 ) ); %% hack assuming symetric , diagonal matrix 
   sigma_l = 1  / sqrt ( sigma_landmark ( 1 ) ); %% 
 
-  b ( o_dim + 1 : o_dim * n_odom + o_dim ) = sigma_o * odom ( 1 : o_dim*n_odom );
+  %b ( o_dim + 1 : o_dim * n_odom + o_dim ) = sigma_o * odom ( 1 : o_dim*n_odom );
+
+  for u = ( 1 : n_odom )
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% Predict measurement %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    ixu = 2*u;
+    rx1 = x ( ixu - 1 );
+    ry1 = x ( ixu + 0 );
+    rx2 = x ( ixu + 1 );
+    ry2 = x ( ixu + 2 );
+    h   = meas_odom(rx1, ry1, rx2, ry2);
+    dxp = h ( 1 );
+    dyp = h ( 2 );
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% slice measurement %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    odom_x =  odom ( u  , 1 );
+    odom_y =  odom ( u  , 2 );
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% set b %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    b ( ixu +1 ) = sigma_o * ( odom_x - dxp ) ;
+    b ( ixu +2 ) = sigma_o * ( odom_y - dyp ) ;
+  end
 
   for o = 0 : n_obs -1
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -98,3 +125,5 @@ function err = error_nonlinear(x, odom, obs, sigma_odom, sigma_landmark)
   err = sum ( b.^2 );
 
 end
+
+
