@@ -21,8 +21,8 @@ function [tform valid_pair_num error] = getRigidTransform(new_pointcloud, ref_po
         
         %==== Set the sizes of matrix A[] and vertor b[] of normal equation: A'*A*x = A'*b ====
         % For every pixel
-        A = zeros(m*n, 6);
-        b = zeros(m*n, 1);
+        %A = zeros(m*n, 6);
+        %b = zeros(m*n, 1);
         
         %==== declare the number of point pairs that are used in this iteration ==== 
         valid_pair_num = 0;
@@ -37,11 +37,22 @@ function [tform valid_pair_num error] = getRigidTransform(new_pointcloud, ref_po
         ref_pts     = reshape ( ref_pts       , [ ] , 3 );
         ref_normals = reshape ( ref_normals   , [ ] , 3 );
 
+        A = [];
+        b = [];
         for i = 1 : m*n
+          if assoc_pts ( i , : ) == [ 0 0 0 ]
+            continue;
+          else
+            valid_pair_num = valid_pair_num + 1;
+          end
           Ati = (horzcat ( toSkewSym(   assoc_pts   ( i , : ) ) ,  eye ( 3 ) )' )  ...
               * ref_normals ( i , : )'; 
-          A ( i , :) = Ati';
-          b ( i    ) = ref_normals ( i , :  ) * ( ref_pts ( i , : )' - assoc_pts ( i , :  )' );
+          %A ( i , :) = Ati';
+          %b ( i    ) = ref_normals ( i , :  ) * ( ref_pts ( i , : )' - assoc_pts ( i , :  )' );
+          A = [ A ; Ati'];
+          bi  = ref_normals ( i , :  ) * ( ref_pts ( i , : )' - assoc_pts ( i , :  )' );
+          b = [ b ; bi];
+
         end
         %ref_normals
         
