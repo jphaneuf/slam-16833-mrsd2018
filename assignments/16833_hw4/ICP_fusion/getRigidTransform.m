@@ -20,6 +20,7 @@ function [tform valid_pair_num error] = getRigidTransform(new_pointcloud, ref_po
         assoc_pts = findLocalClosest(new_pts, ref_pts, m, n, d_th);
         
         %==== Set the sizes of matrix A[] and vertor b[] of normal equation: A'*A*x = A'*b ====
+        % For every pixel
         A = zeros(m*n, 6);
         b = zeros(m*n, 1);
         
@@ -28,10 +29,25 @@ function [tform valid_pair_num error] = getRigidTransform(new_pointcloud, ref_po
         
         %==== TODO: Assign values to A[] and b[] ====
         %==== (Notice: the format of the desired 6-vector is: xi = [beta gamma alpha t_x t_y t_z]') ====
+        %reshape 
 
         % Write your code here...
-        
+        %%note taking in points as row entries, so transposes are opposite what's in the apaper.
+        assoc_pts   = reshape ( assoc_pts     , [ ] , 3 );
+        ref_pts     = reshape ( ref_pts       , [ ] , 3 );
+        ref_normals = reshape ( ref_normals   , [ ] , 3 );
 
+        for i = 1 : m*n
+          Ati = (horzcat ( toSkewSym(   assoc_pts   ( i , : ) ) ,  eye ( 3 ) )' )  ...
+              * ref_normals ( i , : )'; 
+          A ( i , :) = Ati';
+          b ( i    ) = ref_normals ( i , :  ) * ( ref_pts ( i , : )' - assoc_pts ( i , :  )' );
+        end
+        %ref_normals
+        
+        AtA = A' * A;
+        xi  = inv ( AtA ) * A' * b;
+        fprintf("%d\n",iter);
         
         %==== TODO: Solve for the 6-vector xi[] of rigid body transformation ====
 
