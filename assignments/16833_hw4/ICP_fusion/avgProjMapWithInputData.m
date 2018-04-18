@@ -1,14 +1,16 @@
 function updated_map = avgProjMapWithInputData(proj_map, input_data, alpha, h, w, is_use, t)
 
     %==== Set variables ====
-    input_points = input_data.pointcloud.Location;
-    input_colors = input_data.pointcloud.Color;
+    input_points  = input_data.pointcloud.Location;
+    input_colors  = input_data.pointcloud.Color;
     input_normals = input_data.normals;
-    proj_points = proj_map.points;
-    proj_colors = proj_map.colors;
-    proj_normals = proj_map.normals;
-    proj_ccounts = proj_map.ccounts;
-    proj_times = proj_map.times;
+    proj_points   = proj_map.points;
+    proj_colors   = proj_map.colors;
+    proj_normals  = proj_map.normals;
+    proj_ccounts  = proj_map.ccounts;
+    proj_times    = proj_map.times;
+
+    input_colors = double (input_colors);
 
     %==== TODO: Update all the terms in the projected map using the input data ====
     %==== (Hint: apply is_use[] as a mask in vectorization) ====
@@ -25,27 +27,27 @@ function updated_map = avgProjMapWithInputData(proj_map, input_data, alpha, h, w
     input_colors  = reshape ( input_colors  , [ ] , 3 );
     input_normals = reshape ( input_normals , [ ] , 3 );
 
-    proj_ccounts  = proj_ccounts  ( is_use , : );
-    proj_times    = proj_times    ( is_use , : );
-    alpha         = alpha         ( is_use , : );
-    proj_points   = proj_points   ( is_use , : );
-    proj_colors   = proj_colors   ( is_use , : );
-    proj_normals  = proj_normals  ( is_use , : );
-    input_points  = input_points  ( is_use , : );
-    input_normals = input_normals ( is_use , : );
-    input_colors  = input_colors  ( is_use , : );
-    input_colors  = double ( input_colors );
+    proj_ccounts_use  = proj_ccounts  ( is_use , : );
+    proj_times_use    = proj_times    ( is_use , : );
+    alpha_use         = alpha         ( is_use , : );
+    proj_points_use   = proj_points   ( is_use , : );
+    proj_colors_use   = proj_colors   ( is_use , : );
+    proj_normals_use  = proj_normals  ( is_use , : );
+    input_points_use  = input_points  ( is_use , : );
+    input_normals_use = input_normals ( is_use , : );
+    input_colors_use  = input_colors  ( is_use , : );
   
-    updated_points_v   = ( proj_ccounts .* proj_points  + alpha .* input_points  ) ./ ( proj_ccounts + alpha );
-    updated_normals_v  = ( proj_ccounts .* proj_normals + alpha .* input_normals ) ./ ( proj_ccounts + alpha );
-    updated_colors_v   = ( proj_ccounts .* proj_colors  + alpha .* input_colors  ) ./ ( proj_ccounts + alpha );
-    updated_ccounts_v  = proj_ccounts + alpha;
+    updated_points_v   = ( proj_ccounts_use .* proj_points_use  + alpha_use .* input_points_use  ) ./ ( proj_ccounts_use + alpha_use );
+    updated_normals_v  = ( proj_ccounts_use .* proj_normals_use + alpha_use .* input_normals_use ) ./ ( proj_ccounts_use + alpha_use );
+    %updated_colors_v   = ( proj_ccounts .* proj_colors  + alpha .* input_colors  ) ./ ( proj_ccounts + alpha );
+    updated_colors_v   = input_colors_use;
+    updated_ccounts_v  = proj_ccounts_use + alpha_use;
     
-    updated_points  = zeros ( h * w , 3 );
-    updated_colors  = zeros ( h * w , 3 ); 
-    updated_normals = zeros ( h * w , 3 );
-    updated_ccounts = zeros ( h * w , 1 );
-    updated_times   = zeros ( h * w , 1 );
+    updated_points  = proj_points;
+    updated_colors  = proj_colors;
+    updated_normals = proj_normals;
+    updated_ccounts = proj_ccounts;
+    updated_times   = proj_times;
 
     updated_points ( is_use , :) = updated_points_v;
     updated_points = reshape ( updated_points , h , w , 3);
