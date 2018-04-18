@@ -58,7 +58,6 @@ function [tform valid_pair_num error] = getRigidTransform(new_pointcloud, ref_po
         
         AtA = A' * A;
         xi  = inv ( AtA ) * A' * b;
-        fprintf("%d\n",iter);
         
         %==== TODO: Solve for the 6-vector xi[] of rigid body transformation ====
 
