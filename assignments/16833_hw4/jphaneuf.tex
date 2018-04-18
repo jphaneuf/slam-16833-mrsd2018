@@ -30,16 +30,16 @@
 \newpage
 
 
-%\stepcounter{section}
+\stepcounter{section}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Q1}
-\subsection{Q1.a}
+\section{}
+\subsection{a}
 Point-to-point Iterative Closest Point defines an energy function to minimize in terms of Euclidean distance between a point, and a point at a subsequent timestep having undergone some transformation. This yields an estimate of the transformation. 
 
 Point-to-plane Iterative Closest Point defines an energy function to minimize the dot product of a normal vector estimate and the difference between a vertex and a transformed vertex at a subsequent timestep. This also yields an estimate of the transformation, with an emphasis on maintaining surfaces.
 
-\subsection{Q1.b}
+\subsection{b}
 So, we would like to estimate $\tilde{T}_{g,k}$, which transforms points in the camera frame to the world frame, and consequently provides camera pose.  
 To estimate this new transform, we compute multiple iterations of small changes to the transform and solve for a gradient at each iteration. So, we need the incremental transform in solveable form!
 
@@ -118,5 +118,20 @@ Then
 \end{equation}
 
 This is neat, because the incremental transform parameters can now be solved with linear solving tools.
+\section{}
+\subsection{a}
+Volumetric fusion methods suffer from high computational cost, and high memory requirements for Voxel grid storage.
+\subsection{b}
+Consider a point $p$ mapped into a new frame to point $p'$ by rotation $R$ and translation $t$.
+\begin{equation}
+p = R p + t
+\end{equation}
+  
+The point's corresponding normal vector $n$ is mapped to the new frame by
+
+\begin{equation}
+n' = R n
+\end{equation}
+
 
 \end{document}
