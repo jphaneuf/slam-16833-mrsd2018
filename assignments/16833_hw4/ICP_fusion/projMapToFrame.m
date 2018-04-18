@@ -78,13 +78,14 @@ function [proj_map, proj_flag] = projMapToFrame(fusion_map, h, w, tform, cam_par
     proj_times    = full ( sparse ( proj_points_full ( valid_indices , 2 ) , proj_points_full ( valid_indices , 1 ) , fusion_map.times   ( valid_indices ) , h , w ) );
 
     proj_normals_full = ( R * fusion_map.normals')';
+    proj_normals_full = fusion_map.normals;
     proj_points  = zeros ( h , w , 3 );
     proj_normals = zeros ( h , w , 3 );
     proj_colors  = zeros ( h , w , 3 );
     for i = valid_indices'
       x = proj_points_full ( i , 1 );
       y = proj_points_full ( i , 2 );
-      proj_points  ( y , x , : ) = cam_points_full             ( i , 1:3 );
+      proj_points  ( y , x , : ) = locs             ( i , 1:3 );
       proj_normals ( y , x , : ) = proj_normals_full           ( i ,  :  ) ;
       proj_colors  ( y , x , : ) = fusion_map.pointcloud.Color ( i ,  :  ) ;
     end
