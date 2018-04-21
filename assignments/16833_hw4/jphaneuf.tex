@@ -186,8 +186,16 @@ Figures \ref{fig:fusion1}, \ref{fig:fusion2}, and \ref{fig:fusion3} show three v
 \section{}
 \subsection{a}
 Comparing trajectories between the camera pose trajectories in the previous two sections, using the fusion model as the next reference frame results in much better ICP registration. This is because the fusion map provides a more stable reference with each consecutive iteration as points are added and updated.
-\subsection{b}
 
+\subsection{b}
+The final frame evaluated in Fusion showed 1168 associated/matched point pairs and an error ( RMSE ) = 8.871805e-03.  
+The point pairs are evaluated on a downsampled input image with $\frac{  640 * 480 } { 16^{2} } = 1200$ points. So 1168 matched points , along with the very low error, means that the frame transformations based on the fusion map worked well.
+  
+After all frames were processed, the fused point cloud contained 920309 points yielding a compression ratio of \11.52 % . In this case, the low ratio shows that many input points were effectively merged with the map, and not just blindly appended, creating a map that is so fresh, so clean.
+  
+The sequence took 14.91 seconds to complete.  
+
+\subsection{c}
 
 \end{document}
 
