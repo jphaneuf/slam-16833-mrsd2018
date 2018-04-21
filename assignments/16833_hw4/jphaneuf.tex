@@ -118,9 +118,35 @@ Then
 \end{equation}
 
 This is neat, because the incremental transform parameters can now be solved with linear solving tools.
+
+\subsection{}
+Figures \ref{fig:2dview1}, \ref{fig:2dview2}, and \ref{fig:2dview3} show three views of the reconstructed trajectory of camera poses using the iterative closest point algorithm. The trajectory breaks shortly after the first frame, but recovers a clean looking estimate over the remaining frames.
+
+
+\begin{figure}[H]
+\centering
+\includegraphics[page=1,width=0.75\textwidth]{2d_view1}
+\caption{ ICP Trajectory View 1 } 
+\label{fig:2dview1}
+\end{figure}   
+
+\begin{figure}[H]
+\centering
+\includegraphics[page=1,width=0.75\textwidth]{2d_view2}
+\caption{ ICP Trajectory View 2 } 
+\label{fig:2dview2}
+\end{figure}   
+
+\begin{figure}[H]
+\centering
+\includegraphics[page=1,width=0.75\textwidth]{2d_view3}
+\caption{ ICP Trajectory View 3 } 
+\label{fig:2dview3}
+\end{figure}   
+
 \section{}
 \subsection{a}
-Volumetric fusion methods suffer from high computational cost, and high memory requirements for Voxel grid storage.
+Volumetric fusion methods suffer from high computational cost, and high memory requirements for Voxel grid storage as compared to point-based fusion methods.
 \subsection{b}
 Consider a point $p$ mapped into a new frame to point $p'$ by rotation $R$ and translation $t$.
 \begin{equation}
@@ -133,5 +159,36 @@ The point's corresponding normal vector $n$ is mapped to the new frame by
 n' = R n
 \end{equation}
 
+\subsection{d}
+Figures \ref{fig:fusion1}, \ref{fig:fusion2}, and \ref{fig:fusion3} show three views of the resulting fused pointcloud obtained from point-based fusion. The fused map looks good! It contains  approximately three times as many points as a single input pointcloud, but does not appear to have any inconsistencies or warp. Interestingly, the resulting camera pose trajectories look better than with the previous fusion method.
+
+\begin{figure}[H]
+\centering
+\includegraphics[page=1,width=0.75\textwidth]{fusion_view1}
+\caption{ Fusion Map View 1 } 
+\label{fig:fusion1}
+\end{figure}   
+
+\begin{figure}[H]
+\centering
+\includegraphics[page=1,width=0.75\textwidth]{fusion_view2}
+\caption{ Fusion Map View 2 } 
+\label{fig:fusion2}
+\end{figure}   
+
+\begin{figure}[H]
+\centering
+\includegraphics[page=1,width=0.75\textwidth]{fusion_view3}
+\caption{ Fusion Map View 3 } 
+\label{fig:fusion3}
+\end{figure}   
+
+\section{}
+\subsection{a}
+Comparing trajectories between the camera pose trajectories in the previous two sections, using the fusion model as the next reference frame results in much better ICP registration. This is because the fusion map provides a more stable reference with each consecutive iteration as points are added and updated.
+\subsection{b}
+
 
 \end{document}
+
+
