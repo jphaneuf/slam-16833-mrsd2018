@@ -4,14 +4,17 @@
 %  ICP and Point-based Fusion            %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+
 %==== Only load data when needed ====
 if ~exist('seq_param_loaded')
     clear
     clc
     tic
     fprintf('Loading data...');
-    load ../data/seq;
-    load ../data/cam_param; %cam_param = [fx fy cx cy], h, w
+    INPUT_SEQ_FILE = '../geovizdata1/processed/pre.mat';
+    CAM_PARAM_FILE = '../geovizdata1/processed/cam_param.mat';
+    load(INPUT_SEQ_FILE); %load seq variable
+    load (CAM_PARAM_FILE); %cam_param = [fx fy cx cy], h, w
     fprintf('Time spent on loading: %.2f sec \n', toc);
     seq_param_loaded = true;
 end
