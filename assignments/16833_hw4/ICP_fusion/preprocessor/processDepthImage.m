@@ -7,10 +7,11 @@
 data_in_path = '../geovizdata1/';
 data_out_path = '../geovizdata1/processed/';
 data_dir_obj = dir(strcat(data_in_path,'*.mat'));
+load('../geovizdata1/processed/cam_param.mat');
 %hacks
-h = 1920;
-w = 1080;
-d = 3;
+%h = 1920;
+%w = 1080;
+%d = 3;
 
 seq = {};
 for i = 1:length(data_dir_obj)
