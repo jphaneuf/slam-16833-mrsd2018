@@ -4,10 +4,10 @@
 % {1x1 pointCloud}    {480x640x3 double}
 % of pointCloud (from XYZ image) and RGB image
 %pcnormals(pcl)
-data_in_path = '../geovizdata1/';
-data_out_path = '../geovizdata1/processed/';
+data_in_path = '../geovizdata2/';
+data_out_path = strcat(data_in_path,'processed/');
 data_dir_obj = dir(strcat(data_in_path,'*.mat'));
-load('../geovizdata1/processed/cam_param.mat');
+load(strcat(data_in_path,'processed/cam_param.mat'));
 %hacks
 %h = 1920;
 %w = 1080;
