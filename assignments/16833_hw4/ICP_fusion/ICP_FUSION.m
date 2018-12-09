@@ -11,8 +11,9 @@ if ~exist('seq_param_loaded')
     clc
     tic
     fprintf('Loading data...');
-    INPUT_SEQ_FILE = '../geovizdata1/processed/pre.mat';
-    CAM_PARAM_FILE = '../geovizdata1/processed/cam_param.mat';
+    DATA_DIR = '../geovizdata6/processed/'
+    INPUT_SEQ_FILE = strcat(DATA_DIR,'pre.mat');
+    CAM_PARAM_FILE = strcat(DATA_DIR,'cam_param.mat');
     load(INPUT_SEQ_FILE); %load seq variable
     load (CAM_PARAM_FILE); %cam_param = [fx fy cx cy], h, w
     fprintf('Time spent on loading: %.2f sec \n', toc);
@@ -21,8 +22,8 @@ end
 
 %==== TEST: Debug ICP or point-based fusion (0: false, 1: true)====
 is_debug_icp = 0;
-is_debug_fusion = 0;
-is_eval = 0;
+is_debug_fusion = 1;
+is_eval = 1;
 
 %==== Set start time ====
 tic;
@@ -40,6 +41,7 @@ positions = zeros(T, 3);
 
 %==== Set downsampling ratio for ICP ====
 ds_ratio = 16;
+ds_ratio = 32;
 
 %==== Start main loop ====
 for t = 1:T
@@ -48,6 +50,7 @@ for t = 1:T
     fprintf('Frame#: %d', t);
     
     %==== Get input data from seq{} ====
+    %pointcloud = pcNans2Zero(seq{t, 1});
     pointcloud = seq{t, 1};
     normals = seq{t, 2};
     
@@ -81,7 +84,8 @@ for t = 1:T
         
         %==== DEBUG 1): A built-in registration function for debugging point-based fusion only ====
         else
-            tform = pcregrigid(new_pointcloud, ref_pointcloud, 'Metric', 'pointToPlane', 'Extrapolate', true);
+            %tform = pcregrigid(new_pointcloud, ref_pointcloud, 'Metric', 'pointToPlane', 'Extrapolate', true);
+            tform = pcregistercpd(new_pointcloud, ref_pointcloud, 'Transform', 'Rigid');
         end
         fprintf('\n');
         
@@ -118,7 +122,8 @@ end
 plotTrajAndMap(positions, fusion_map);
 
 %==== EVAL: Visualize normals, ccounts, and times ====
-plotEvalMaps(fusion_map, is_eval);
+%plotEvalMaps(fusion_map, is_eval);
+pcwrite(fusion_map.pointcloud, 'sickasspointcloudk.ply');
 
 %==== Display final results ====
 format short;
